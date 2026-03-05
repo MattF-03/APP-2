@@ -1,9 +1,9 @@
 # Kanban 
 
 ## A faire 
-- [ ] Code tri 
-- [ ] Code générateur (trafic --> normal, crise ...)
-- [ ] Code Policies 
+- [ ] Code tri (@malobessiere)
+- [ ] Code générateur (trafic --> normal, crise ...) (@Noam-est)
+- [ ] Code Policies (@MattF-03)
 - [ ] Code simulation 
 
 ## En cours 
