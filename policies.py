@@ -1,0 +1,104 @@
+from APP_datasets import AVIONS_INITIAL
+
+def comparateur(avion_1, avion_2, criteres):   # On définit une fonction qui compare deux avions avion_1 et avion_2 selon une liste de critères
+    for critere in criteres:   # On parcourt chaque critère dans l'ordre de priorité
+        valeur_1, valeur_2 = critere(avion_1), critere(avion_2)   # On applique le critère aux deux avions pour obtenir leurs valeurs respectives
+
+        if valeur_1 == valeur_2: 
+            continue
+
+        if type(valeur_1, bool):   # Si valeur_1 est un nombre (int ou float) = retourne True si avion_1 possède ce critère
+            return bool(valeur_1)
+        
+        if type(valeur_1, (int, float)):   # Si valeur_1 est un booléen = retourne True si la valeur de avion_1 est supérieure à celle de avion_2
+            return valeur_1 > valeur_2
+        
+    return False
+
+def egalite(avion_1, avion_2):   # On définit une fonction qui départage deux avions à égalité
+    return avion_1.get("temps_arrivee", 0) < avion_2.get("temps_arrivee", 0)   
+    # Retourne True si avion_1 est arrivé avant avion_2 (en utilisant 0 comme valeur par défaut si la clé "temps_arrivee" est absente)
+
+def technique(avion):   # On extrait le booléen de panne technique de l'avion (True ou False)
+    return avion["technique"]
+
+def medical(avion):   # On extrait le booléen d'urgence médicale de l'avion (True ou False)
+    return avion["medical"]
+
+def carburant(avion):   # On extrait la valeur du carburant de l'avion (True ou False)
+    return avion["carburant"]
+
+def diplomatique(avion):   # On extrait le niveau d'importance diplomatique de l'avion 
+    return avion["diplomatique_niv"]
+
+def policy_carburant(avion_1, avion_2):   # On compare deux avions et on retourne True si avion_1 doit atterrir avant avion_2 en fonction du carburant
+    if carburant(avion_1) != carburant(avion_2):   # Si les deux avions n'ont pas la même quantité de carburant = on peut les départager
+        return carburant(avion_1) < carburant(avion_2)   # On retourne True si avion_1 a moins de carburant (il doit atterir en premier)   
+    return egalite(avion_1, avion_2)
+
+def policy_crise(avion_1, avion_2):
+    if technique(avion_1) != technique(avion_2):   # On priorise l'avion ayant une panne technique
+        return bool(technique(avion_1))
+    
+    if medical(avion_1) != medical(avion_2):   # On priorise l'avion ayant une urgence médicale
+        return bool(medical(avion_1))
+  
+    if carburant(avion_1) != carburant(avion_2):   # On priorise l'avion ayant le moins de carburant
+        return carburant(avion_1) < carburant(avion_2)
+    
+    if diplomatique(avion_1) != diplomatique(avion_2):   # On priorise l'avion ayant le niveau diplomatique le plus élevé
+        return diplomatique(avion_1) > diplomatique(avion_2)
+  
+    return egalite(avion_1, avion_2)   
+
+def policy_diplomatique(avion_1, avion_2):
+    if technique(avion_1) != technique(avion_2):   
+        return bool(technique(avion_1))
+    
+    if medical(avion_1) != medical(avion_2):  
+        return bool(medical(avion_1))
+  
+    if carburant(avion_1) != carburant(avion_2):   
+        return carburant(avion_1) < carburant(avion_2)
+    
+    if diplomatique(avion_1) != diplomatique(avion_2):   
+        return diplomatique(avion_1) > diplomatique(avion_2)
+    
+    return egalite(avion_1, avion_2)
+
+def policy_medical(avion_1, avion_2):
+    if technique(avion_1) != technique(avion_2):   
+        return bool(technique(avion_1))
+    
+    if medical(avion_1) != medical(avion_2):  
+        return bool(medical(avion_1))
+  
+    if carburant(avion_1) != carburant(avion_2):   
+        return carburant(avion_1) < carburant(avion_2)
+    
+    if diplomatique(avion_1) != diplomatique(avion_2):   
+        return diplomatique(avion_1) > diplomatique(avion_2)
+    
+    return egalite(avion_1, avion_2)
+
+def policy_ordre_arrivee(avion_1, avion_2):
+    return egalite(avion_1, avion_2)
+
+POLICIES = {
+    "carburant": policy_carburant, 
+    "crise": policy_crise,
+    "diplomatique": policy_diplomatique, 
+    "medical": policy_medical, 
+    "ordre_arrivee": policy_ordre_arrivee
+}
+
+if __name__ == "__main__":
+    from tri import tri_insertion
+    print("\n=== ORDRE D'ATTERRISSAGE ===")
+    for nom, policy in POLICIES.items():   # On parcourt le dictionnaire POLICIES en récupérant à chaque tour le nom de la policy et la fonction associée
+        avions_tries, nombre_comparaisons = tri_insertion(AVIONS_INITIAL, policy)
+        # On trie les avions selon la policy et on récupère le tri et le nombre de comparaisons
+        
+        six_premiers = " - ".join(avion["index"] for avion in avions_tries[:6])   # On récupère les 6 premiers avions triés
+        print(f"  [{nom}] ({nombre_comparaisons} comparaisons) {six_premiers}...")   
+        # On affiche le nom de la policy, le nombre de comparaisons et les 6 premiers avions sur une ligne
