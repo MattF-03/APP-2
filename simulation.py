@@ -1,8 +1,8 @@
 def simulation(liste_avion_trier):
 
     temps = 0
-    avions_sauve = []
-    avions_crash = []
+    avions_sauves = 0
+    avions_crashs = 0
 
     print(f"\n--- Début de la simulation (19h42) ---")
 
@@ -11,17 +11,17 @@ def simulation(liste_avion_trier):
 
 #Vérification 
         if avion['carburant'] <= 0:
-            crashs += 1
+            avions_crashs += 1
             print(f"[T+{temps}min] !!! CRASH !!! : Le vol {avion['index']} s'est écrasé.")
         else:
-            sauves += 1
+            avions_sauves += 1
             print(f"[T+{temps}min] Atterrissage : {avion['index']} (Fuel restant: {avion['carburant']} min)")
 
 # plus le temps passe, plus le carburant part
         temps += 1
-        for a in liste_avion_triee:
+        for a in liste_avion_trier:
             a['carburant'] -= 1
     
-    print(f"\n=== BILAN FINAL ===")
-    print(f"Avions sauvés : {sauves}")
-    print(f"Crashs : {crashs}")
+    return avions_sauves , avions_crashs
+    
+    
