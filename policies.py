@@ -16,20 +16,20 @@ def comparateur(avion_1, avion_2, criteres):   # On définit une fonction qui co
     return False
 
 def egalite(avion_1, avion_2):   # On définit une fonction qui départage deux avions à égalité
-    return avion_1.get("temps_arrivee", 0) < avion_2.get("temps_arrivee", 0)   
-    # Retourne True si avion_1 est arrivé avant avion_2 (en utilisant 0 comme valeur par défaut si la clé "temps_arrivee" est absente)
+    return avion_1.get("arrival_time", 0) < avion_2.get("arrival_time", 0)   
+    # on retourne True si avion_1 est arrivé avant avion_2 (en utilisant 0 comme valeur par défaut si la clé "temps_arrivee" est absente)
 
 def technique(avion):   # On extrait le booléen de panne technique de l'avion (True ou False)
-    return avion["technique"]
+    return avion["technical_issue"]
 
 def medical(avion):   # On extrait le booléen d'urgence médicale de l'avion (True ou False)
     return avion["medical"]
 
 def carburant(avion):   # On extrait la valeur du carburant de l'avion (True ou False)
-    return avion["carburant"]
+    return avion["fuel"]
 
 def diplomatique(avion):   # On extrait le niveau d'importance diplomatique de l'avion 
-    return avion["diplomatique_niv"]
+    return avion["diplomatic_level"]
 
 def policy_carburant(avion_1, avion_2):   # On compare deux avions et on retourne True si avion_1 doit atterrir avant avion_2 en fonction du carburant
     if carburant(avion_1) != carburant(avion_2):   # Si les deux avions n'ont pas la même quantité de carburant = on peut les départager
@@ -92,13 +92,11 @@ POLICIES = {
     "ordre_arrivee": policy_ordre_arrivee
 }
 
-if __name__ == "__main__":
+if __name__ == "__main__":   # On vérifie que le fichier est exécuté directement et non importé
     from tri import tri_insertion
     print("\n=== ORDRE D'ATTERRISSAGE ===")
     for nom, policy in POLICIES.items():   # On parcourt le dictionnaire POLICIES en récupérant à chaque tour le nom de la policy et la fonction associée
-        avions_tries, nombre_comparaisons = tri_insertion(AVIONS_INITIAL, policy)
-        # On trie les avions selon la policy et on récupère le tri et le nombre de comparaisons
-        
-        six_premiers = " - ".join(avion["index"] for avion in avions_tries[:6])   # On récupère les 6 premiers avions triés
-        print(f"  [{nom}] ({nombre_comparaisons} comparaisons) {six_premiers}...")   
-        # On affiche le nom de la policy, le nombre de comparaisons et les 6 premiers avions sur une ligne
+        avions_tries, nombre_comparaisons = tri_insertion(AVIONS_INITIAL, policy)   # On trie les avions selon la policy et on récupère le tri et le nombre de comparaisons
+        six_premiers = " - ".join(avion["id"] for avion in avions_tries[:6])   # On récupère les 6 premiers avions triés
+        print(f"  [{nom}] ({nombre_comparaisons} comparaisons) {six_premiers}...")   # On affiche le nom de la policy, le nombre de comparaisons et les 6 premiers avions sur une ligne
+        print()
