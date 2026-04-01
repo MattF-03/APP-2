@@ -72,4 +72,4 @@ if __name__ == "__main__":
     print("\n=== STRESS TEST (policy_crise) ===\n")   # On affiche le titre de la section avec une ligne vide avant et après
     print(SEPARATEUR)
     for n in [10, 30, 50, 100]:   # On teste quatre tailles de trafic différentes pour observer l'évolution des performances
-        comparer(GENERATEURS["chaos"](n), policy_crise, "crise n = {}".format(n))   # On génère un trafic chaotique de n avions et on compare tri_insertion et tri_selection avec la policy crise
+        comparer(GENERATEURS["chaos"](n), policy_crise, "Crise n = {}".format(n))   # On génère un trafic chaotique de n avions et on compare tri_insertion et tri_selection avec la policy crise
