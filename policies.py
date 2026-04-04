@@ -95,6 +95,7 @@ POLICIES = {
 if __name__ == "__main__":   # On vérifie que le fichier est exécuté directement et non importé
     from tri import tri_insertion
     print("\n=== ORDRE D'ATTERRISSAGE ===")
+    print()
     for nom, policy in POLICIES.items():   # On parcourt le dictionnaire POLICIES en récupérant à chaque tour le nom de la policy et la fonction associée
         avions_tries, nombre_comparaisons = tri_insertion(AVIONS_INITIAL, policy)   # On trie les avions selon la policy et on récupère le tri et le nombre de comparaisons
         six_premiers = " - ".join(avion["id"] for avion in avions_tries[:6])   # On récupère les 6 premiers avions triés
