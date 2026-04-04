@@ -148,12 +148,14 @@ def afficher_stats(avions, nom):
     print(f"  Carburant critique    : {carb}")
     print(f"  Niveau diplomatique   : {diplo}")
     print(f"  Moyenne carburant     : {moy:.1f} min")
-    print("-" * 30)
+    print("-" * 40)
+    print()
 
 if __name__ == "__main__":   # On vérifie que le fichier est exécuté directement et non importé
     print("\n=== GENERATEUR DE TRAFIC ===\n")
     for taille in [10, 24, 50, 100]:   # On teste 4 tailles différentes de trafic
-        print("--- nombre = {} ---".format(taille))   # On affiche le nombre d'avions testé
+        print("-- Nombre = {} --".format(taille))   # On affiche le nombre d'avions testé
+        print()
         for nom, generateur in GENERATEURS.items():   # On parcourt la liste de tous les scénarios disponibles un par un
             afficher_stats(generateur(taille), nom)   # On crée une liste d'avions selon un scénario précis et on affiche les statistiques correspondantes
         print()
