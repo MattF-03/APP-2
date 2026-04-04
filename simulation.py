@@ -41,10 +41,10 @@ def simuler(avions, policy, nom = "", afficher = True):
         sauves.append(atterri)   # On ajoute l'avion atterri à la liste des sauvés
 
         if afficher:   
-            print(f"  Tour {tour} | OK : {atterri["id"]}  Carburant = {atterri["fuel"]}  En attente = {len(file)}")  # On affiche les informations de l'atterrissage
+            print(f"  Tour {tour} |  OK : {atterri["id"]}   Carburant = {atterri["fuel"]}   En attente = {len(file)}")  # On affiche les informations de l'atterrissage
 
     taux = len(sauves) / len(avions) * 100   # On calcule le pourcentage d'avions sauvés
-    print(f"  --- {nom} | Sauvés = {len(sauves)}  Crashés = {len(crashes)}  Taux = {taux:.1f}%")   # On affiche le bilan de la simulation
+    print(f"  --- {nom} |  Sauvés = {len(sauves)}   Crashés = {len(crashes)}   Taux = {taux:.1f}%")   # On affiche le bilan de la simulation
     return {"sauves": sauves, "crashes": crashes, "taux": taux}   # On retourne un dictionnaire contenant les résultats
 
 def comparer_policies(avions, policies):   # On définit une fonction qui compare plusieurs policies d'atterrissage
@@ -56,9 +56,12 @@ def comparer_policies(avions, policies):   # On définit une fonction qui compar
 
     bilans.sort(key = lambda b: len(b["crashes"]))   # On trie les bilans par nombre de crashes croissant
 
-    print("\n=== Policy  |  Sauvés  |  Crashés  |  Taux ===")   # On affiche l'en-tête du tableau de comparaison
-    for bilan in bilans:   # On parcourt chaque bilan
-        print(f"{bilan["nom"]}  {len(bilan["sauves"])}  {len(bilan["crashes"])}  {bilan["taux"]:.1f}%")   # On affiche les résultats de chaque policy
+    en_tete = f"{'Policy':^20} {'Sauvés':^10} {'Crashés':^10} {'Taux':^12}"   # On crée l'en-tête avec chaque titre centré dans sa colonne
+    print("\n" + en_tete)
+    print("-" * len(en_tete))   # On affiche une ligne de tirets de la même longueur que l'en-tête
+    for bilan in bilans:
+        taux = f"{bilan['taux']:.1f}"   # On formate le taux en nombre décimal avec un chiffre après la virgule
+        print(f"{bilan['nom']:^20} {len(bilan['sauves']):^10} {len(bilan['crashes']):^10} {taux:^10}%")   # On affiche les données de chaque colonne
 
 if __name__ == "__main__":   # On vérifie que le fichier est exécuté directement et non importé
     from policies import POLICIES, policy_crise   # On importe les policies depuis le fichier policies.py
