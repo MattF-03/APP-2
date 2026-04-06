@@ -4,6 +4,9 @@ from APP_datasets import AVIONS_INITIAL
 
 def simuler(avions, policy, nom = "", afficher = True):
 # On définit une fonction de simulation prenant une liste d'avions, une policy choisie pour les atterrissages, un nom pour la simulation et l'affichage affiché par défaut
+    if not nom:
+        nom = policy.__name__.replace("policy_", "")   # On attribue par défaut le nom de la fonction de tri au scénario en retirant le préfixe policy
+
     file = copy.deepcopy(avions)   # On crée une copie indépendante de la liste avions pour ne pas la modifier pendant la simulation
     
     sauves = []   # On crée les listes des avions sauvés
@@ -31,7 +34,7 @@ def simuler(avions, policy, nom = "", afficher = True):
         for k in morts:  # On parcourt chaque avion crashé
             crashes.append(k)   # On ajoute l'avion crashé à la liste des crashes
             if afficher:  
-                print(f"  Tour {tour} | CRASH : {i["id"]}")   # On affiche le numéro du tour et l'identifiant de l'avion crashé
+                print(f"  Tour {tour:<3} |  CRASH : {i["id"]}")   # On affiche le numéro du tour et l'identifiant de l'avion crashé
 
         if len(file) == 0:   # Si tous les avions se sont crashés
             break
@@ -41,27 +44,16 @@ def simuler(avions, policy, nom = "", afficher = True):
         sauves.append(atterri)   # On ajoute l'avion atterri à la liste des sauvés
 
         if afficher:   
-            print(f"  Tour {tour} |  OK : {atterri["id"]}   Carburant = {atterri["fuel"]}   En attente = {len(file)}")  # On affiche les informations de l'atterrissage
+            print(f"  Tour {tour:<2}  |  OK : {atterri["id"]:<7}   Carburant = {atterri["fuel"]:<3}   En attente = {len(file)}")  # On affiche les informations de l'atterrissage
 
     taux = len(sauves) / len(avions) * 100   # On calcule le pourcentage d'avions sauvés
-    print(f"  --- {nom} |  Sauvés = {len(sauves)}   Crashés = {len(crashes)}   Taux = {taux:.1f}%")   # On affiche le bilan de la simulation
+    if not afficher:
+        print(f"  {nom:<15} |  Sauvés = {len(sauves):<3}   Crashés = {len(crashes):<3}   Taux = {taux:.1f}%")   # On affiche le bilan de la simulation
     return {"sauves": sauves, "crashes": crashes, "taux": taux}   # On retourne un dictionnaire contenant les résultats
 
 def comparer_policies(avions, policies):   # On définit une fonction qui compare plusieurs policies d'atterrissage
-    bilans = []   # On crée une liste vide pour stocker les résultats de chaque policy
     for nom, policy in policies.items():   # On parcourt chaque policy du dictionnaire policies
-        bilan = simuler(avions, policy, afficher = False)   # On simule les atterrissages sans affichage
-        bilan["nom"] = nom   # On ajoute le nom de la policy au bilan
-        bilans.append(bilan)   # On ajoute le bilan à la liste des bilans
-
-    bilans.sort(key = lambda b: len(b["crashes"]))   # On trie les bilans par nombre de crashes croissant
-
-    en_tete = f"{'Policy':^20} {'Sauvés':^10} {'Crashés':^10} {'Taux':^12}"   # On crée l'en-tête avec chaque titre centré dans sa colonne
-    print("\n" + en_tete)
-    print("-" * len(en_tete))   # On affiche une ligne de tirets de la même longueur que l'en-tête
-    for bilan in bilans:
-        taux = f"{bilan['taux']:.1f}"   # On formate le taux en nombre décimal avec un chiffre après la virgule
-        print(f"{bilan['nom']:^20} {len(bilan['sauves']):^10} {len(bilan['crashes']):^10} {taux:^10}%")   # On affiche les données de chaque colonne
+        simuler(avions, policy, nom = nom, afficher = False)   # On exécute la simulation d'une policy sans afficher le détail des tours pour ne conserver que son bilan final
 
 if __name__ == "__main__":   # On vérifie que le fichier est exécuté directement et non importé
     from policies import POLICIES, policy_crise   # On importe les policies depuis le fichier policies.py
