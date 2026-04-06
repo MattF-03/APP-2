@@ -32,6 +32,7 @@ if __name__ == "__main__":   # On vérifie que le fichier est exécuté directem
     print("-" * 40)   # On crée une ligne de tirets pour rendre le texte plus lisible
 
     print("\n=== 1. ORDRE D'ATTERRISSAGE PAR POLICY ===")
+    print()
     for nom, policy in POLICIES.items():   # On parcourt le dictionnaire POLICIES en récupérant à chaque tour le nom de la policy et la fonction associée
         resultat, tests = tri_insertion(AVIONS_INITIAL, policy)   # On trie la liste de départ selon la policy actuelle et on récupère le nombre de vérifications effectuées
         top_6 = [avion["id"] for avion in resultat[:6]]   # On crée une liste contenant les identifiants des 6 prochains avions à atterrir   
@@ -41,14 +42,17 @@ if __name__ == "__main__":   # On vérifie que le fichier est exécuté directem
         print("-" * 30)   # On crée une ligne de tirets pour rendre le texte plus lisible
 
     print("\n=== 2. COMPARAISON selection VS insertion ===")
+    print()
     for nom, policy in POLICIES.items():
         comparer(AVIONS_INITIAL, policy, nom)   # On définit une fonction qui mesure et affiche les performances entre le tri par insertion et le tri par sélection
 
     print("\n=== 3. TEST PERFORMANCE (scénario chaos, policy crise) ===")
+    print()
     for n in [10, 30, 50, 100]:   # On crée une boucle pour tester des groupes d'avions de plus en plus grands
         comparer(GENERATEURS["chaos"](n), policy_crise, "Chaos n = {}".format(n))   # On teste l'efficacité du tri dans une situation de chaos avec n avions
 
     print("\n=== 4. SIMULATION (Durée atterrissage = {} min) ===".format(DUREE_ATTERRISSAGE))
+    print()
     print("  {:^18} | {:^6} | {:^6}".format("Policy", "Sauvés", "Crashés"))   # On affiche l'en-tête du tableau avec les titres des colonnes 
     print("  " + "-" * 40)   # On met des tirets pour séparer les titres du tableau
     for nom, policy in POLICIES.items():
@@ -56,6 +60,7 @@ if __name__ == "__main__":   # On vérifie que le fichier est exécuté directem
         print("  {:^18} | {:^6} |  {:^6}".format(nom, len(sauves), len(crashes)))   # On affiche le nom de la policy et le nombre total d'avions sauvés et crashés
 
     print("\n=== 5. SIMULATION PAR SCENARIO ===")
+    print()
     print("  {:^22} | {:^6} | {:^6}".format("Scénario", "Sauvés", "Crashés"))   # On affiche l'en-tête du second tableau avec les titres des colonnes pour comparer les différents types de trafic
     print("  " + "-" * 44)   # On met des tirets pour séparer les titres du tableau
     for nom, generateur in GENERATEURS.items():   # On parcourt chaque type de situation pour voir leur impacte sur les vols
