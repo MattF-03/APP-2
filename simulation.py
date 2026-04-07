@@ -1,28 +1,69 @@
-def simulation(liste_avion_trier):
+import copy   # On importe copy permettant de copier des objets sans modifier l'original
+from tri import tri_insertion   # On importe la fonction tri_insertion depuis le fichier tri.py
+from APP_datasets import AVIONS_INITIAL
 
-    temps = 0
-    avions_sauves = 0
-    avions_crashs = 0
+def simuler(avions, policy, nom = "", afficher = True):
+# On définit une fonction de simulation prenant une liste d'avions, une policy choisie pour les atterrissages, un nom pour la simulation et l'affichage affiché par défaut
+    if not nom:
+        nom = policy.__name__.replace("policy_", "")   # On attribue par défaut le nom de la fonction de tri au scénario en retirant le préfixe policy
 
-    print(f"\n--- Début de la simulation (19h42) ---")
-
-    while len(liste_avion_trier) > 0:
-        avion = liste_avion_trier.pop(0)       #récupération de l'avion de plus important 
-
-        #Vérification 
-        if avion['carburant'] <= 0:
-            avions_crashs += 1
-            print(f"[T+{temps}min] !!! CRASH !!! : Le vol {avion['index']} s'est écrasé.")
-        else:
-            avions_sauves += 1
-            print(f"[T+{temps}min] Atterrissage : {avion['index']} (Fuel restant: {avion['carburant']} min)")
-
-        # plus le temps passe, plus le carburant part
-        temps += 1
-        for a in liste_avion_trier:
-            a['carburant'] -= 1
+    file = copy.deepcopy(avions)   # On crée une copie indépendante de la liste avions pour ne pas la modifier pendant la simulation
     
-    return avions_sauves , avions_crashs
-    
+    sauves = []   # On crée les listes des avions sauvés
+    crashes = []   # On crée les listes des avions crashés
+
+    tour = 0   # On crée un compteur s'incrémentant à chaque fois qu'un avion atterrit
+
+    while len(file) > 0:   # On répète la boucle tant qu'il reste des avions en attente
+        tour += 1   # On incrémente le compteur de tours à chaque itération
+
+        for i in file:   # On parcourt chaque avion de la file
+            i["fuel"] -= 1   # On diminue le carburant de chaque avion de 1
+
+        morts = []   # On crée une liste vide pour stocker les avions qui vont se crasher
+        survivants = []   # On crée une liste vide pour stocker les avions encore en vie
+
+        for j in file:   # On parcourt chaque avion pour les séparer selon leur carburant
+            if j["fuel"] <= 0:   # Si l'avion n'a plus de carburant, alors il se crashe
+                morts.append(j)   # On ajoute l'avion à la liste des morts
+            else:   
+                survivants.append(j)   # On ajoute l'avion à la liste des survivants
+
+        file = survivants   # On remplace la file par uniquement les avions survivants
+
+        for k in morts:  # On parcourt chaque avion crashé
+            crashes.append(k)   # On ajoute l'avion crashé à la liste des crashes
+            if afficher:  
+                print(f"  Tour {tour:<3} |  CRASH : {i["id"]}")   # On affiche le numéro du tour et l'identifiant de l'avion crashé
+
+        if len(file) == 0:   # Si tous les avions se sont crashés
+            break
+
+        file = tri_insertion(file, policy)[0]   # On trie les avions selon la policy choisie
+        atterri = file.pop(0)   # On retire le premier avion de la file car il va atterrir
+        sauves.append(atterri)   # On ajoute l'avion atterri à la liste des sauvés
+
+        if afficher:   
+            print(f"  Tour {tour:<2}  |  OK : {atterri["id"]:<7}   Carburant = {atterri["fuel"]:<3}   En attente = {len(file)}")  # On affiche les informations de l'atterrissage
+
+    taux = len(sauves) / len(avions) * 100   # On calcule le pourcentage d'avions sauvés
+    if not afficher:
+        print(f"  {nom:<15} |  Sauvés = {len(sauves):<3}   Crashés = {len(crashes):<3}   Taux = {taux:.1f}%")   # On affiche le bilan de la simulation
+    return {"sauves": sauves, "crashes": crashes, "taux": taux}   # On retourne un dictionnaire contenant les résultats
+
+def comparer_policies(avions, policies):   # On définit une fonction qui compare plusieurs policies d'atterrissage
+    for nom, policy in policies.items():   # On parcourt chaque policy du dictionnaire policies
+        simuler(avions, policy, nom = nom, afficher = False)   # On exécute la simulation d'une policy sans afficher le détail des tours pour ne conserver que son bilan final
+
+if __name__ == "__main__":   # On vérifie que le fichier est exécuté directement et non importé
+    from policies import POLICIES, policy_crise   # On importe les policies depuis le fichier policies.py
+
+    print("\n=== SIMULATION ===\n")   # On affiche le titre de la simulation
+    simuler(AVIONS_INITIAL, policy_crise, "crisis")   # On lance la simulation avec la policy de crise
+
+    print("\n=== COMPARAISON DES POLICIES ===\n")   # On affiche le titre de la comparaison
+    comparer_policies(AVIONS_INITIAL, POLICIES)   # On lance la comparaison de toutes les policies
+
+    print()
     
 
