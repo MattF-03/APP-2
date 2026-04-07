@@ -1,12 +1,12 @@
 # Kanban 
 
 ## A faire  
-- [ ] Faire le main 
+- [x] Faire le main 
 
 ## En cours 
-- [ ] Finir le plan 
-- [ ] Finir le Kanban 
-- [ ] Finir le readme 
+- [x] Finir le plan 
+- [x] Finir le Kanban 
+- [x] Finir le readme 
 
 ## Fini 
 - [x] Code tri (@malobessiere)
