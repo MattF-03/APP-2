@@ -4,7 +4,8 @@ import APP_datasets
 
 def tri_insertion(avions, policy):
     liste = copy.deepcopy(avions)   # On crée une copie indépendante de la liste avions pour ne pas la modifier pendant le tri 
-    nombre_comparaisons = 0
+
+    nombre_comparaisons = 0    # On initialise un compteur pour mesurer le nombre de comparaisons effectuées
 
     for i in range(1, len(liste)):   # On parcourt la liste à partir du deuxième élément car le premier est considéré comme trié
         avion_courant = liste[i]   # On mémorise l'avion à insérer à sa bonne place dans la partie déjà triée
@@ -24,17 +25,18 @@ def tri_insertion(avions, policy):
 
 def tri_selection(avions, policy):
     liste = copy.deepcopy(avions)   # On crée une copie indépendante de la liste avions pour ne pas la modifier pendant le tri 
-    nombre_comparaisons = 0   # On initialise un compteur pour mesurer le nombre de comparaisons effectuées
+
+    nombre_comparaisons = 0   
 
     for i in range(len(liste) - 1):
-        index_prioritaire = i   # On suppose que l'avion le plus prioritaire est celui en position i
+        identifiant_prioritaire = i   # On suppose que l'avion le plus prioritaire est celui en position i
 
         for j in range(i + 1, len(liste)):   # On parcourt tous les avions qui n'ont pas encore été placés
             nombre_comparaisons += 1
-            if policy(liste[j], liste[index_prioritaire]):   # Si l'avion en position j est plus prioritaire que celui trouvé jusqu'ici
-                index_prioritaire = j   # On a trouvé un avion plus prioritaire
+            if policy(liste[j], liste[identifiant_prioritaire]):   # Si l'avion en position j est plus prioritaire que celui trouvé jusqu'ici
+                identifiant_prioritaire = j   # On a trouvé un avion plus prioritaire
 
-        liste[i], liste[index_prioritaire] = liste[index_prioritaire], liste[i]   # On échange l'avion le plus prioritaire trouvé avec celui en position i
+        liste[i], liste[identifiant_prioritaire] = liste[identifiant_prioritaire], liste[i]   # On échange l'avion le plus prioritaire trouvé avec celui en position i
 
     return liste, nombre_comparaisons
 
@@ -48,28 +50,27 @@ def comparer(avions, policy, nom = ""):
     duree_selection = (temps_1 - temps_0) * 1000   # On calcule la durée du tri sélection en soustrayant les deux temps et en convertissant en millisecondes
     duree_insertion = (temps_2 - temps_1) * 1000   # On calcule la durée du tri insertion en soustrayant les deux temps et en convertissant en millisecondes
 
-    print("  [{:<15}] nom = {:<4}  selection = {:<6} ({:.3f} ms)  insertion = {:<6} ({:.3f} ms)".format(nom, len(avions), nombre_selection, duree_selection, nombre_insertion, duree_insertion))
+    print("  [{:<13}]   Nom = {:<4}  Sélection = {:<5} ({:.3f} ms)   Insertion = {:<5} ({:.3f} ms)".format(nom, len(avions), nombre_selection, duree_selection, nombre_insertion, duree_insertion))
     # On affiche sur une ligne le nom du scénario, la taille de la liste, le nombre de comparaisons de la liste et le temps d'exécution de la liste
 
-if __name__ == "__main__":
+if __name__ == "__main__":   # On vérifie que le fichier est exécuté directement et non importé
     from policies import POLICIES, policy_crise   # On importe le dictionnaire de toutes les policies et la policy crise depuis policies.py
     from generateur import GENERATEURS
 
-    SEPARATEUR = "  " + "-" * 72   # On crée une ligne de 72 tirets pour séparer les sections dans l'affichage
-
     print("\n=== ORDRE D'ATTERRISSAGE ===\n")   # On affiche le titre de la section avec une ligne vide avant et après
-    print(SEPARATEUR)   # On affiche la ligne de tirets pour séparer visuellement le titre du contenu
     for nom, policy in POLICIES.items():   # On parcourt chaque policy du dictionnaire en récupérant son nom et sa fonction
         avions_tries, liste_triee_insertion = tri_insertion(APP_datasets.AVIONS_INITIAL, policy)   # On trie les avions selon la policy et on récupère la liste triée et le nombre de comparaisons
         for i in avions_tries[:6]:   # On parcourt les 6 premiers avions de la liste triée (les 6 prioritaires)
-            print("  {} | {}".format(nom, i["index"]))   # On affiche le nom de la policy et l'identifiant de l'avion correspondant
+            print("  {} | {}".format(nom, i["id"]))   # On affiche le nom de la policy et l'identifiant de l'avion correspondant
+        
+        print()
 
-    print("\n=== COMPARAISON selection VS insertion ===\n")   # On affiche le titre de la section avec une ligne vide avant et après
-    print(SEPARATEUR)
+    print("\n=== COMPARAISON sélection VS insertion ===\n")   # On affiche le titre de la section avec une ligne vide avant et après
     for nom, policy in POLICIES.items():
         comparer(APP_datasets.AVIONS_INITIAL, policy, nom)   # On appelle la fonction comparer qui affiche le nombre de comparaisons et le temps d'exécution tri_insertion et tri_selection
 
-    print("\n=== STRESS TEST (policy_crise) ===\n")   # On affiche le titre de la section avec une ligne vide avant et après
-    print(SEPARATEUR)
+    print("\n=== TEST PERFORMANCE (policy_crise) ===\n")   # On affiche le titre de la section avec une ligne vide avant et après
     for n in [10, 30, 50, 100]:   # On teste quatre tailles de trafic différentes pour observer l'évolution des performances
-        comparer(GENERATEURS["chaos"](n), policy_crise, "crise n = {}".format(n))   # On génère un trafic chaotique de n avions et on compare tri_insertion et tri_selection avec la policy crise
+        comparer(GENERATEURS["chaos"](n), policy_crise, "Crise n = {}".format(n))   # On génère un trafic chaotique de n avions et on compare tri_insertion et tri_selection avec la policy crise
+    print()
+ 
